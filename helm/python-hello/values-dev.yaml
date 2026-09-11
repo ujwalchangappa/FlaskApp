@@ -1,0 +1,17 @@
+replicaCount: 1
+
+image:
+  repository: ujwal30/hello-flask
+  tag: latest
+  pullPolicy: Always
+
+namespace:
+  name: dev
+
+container:
+  port: 5000
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 5000

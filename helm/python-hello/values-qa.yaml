@@ -1,0 +1,34 @@
+replicaCount: 2replicaCount: 2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  targetPort: 5000  port: 80  type: LoadBalancerservice:  port: 5000container:  name: qanamespace:  pullPolicy: Always  tag: latest  repository: ujwal30/hello-flaskimage:
+image:
+  repository: ujwal30/hello-flask
+  tag: latest
+  pullPolicy: Always
+
+namespace:
+  name: qa
+
+container:
+  port: 5000
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 5000

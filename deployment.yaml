@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-hello
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-hello
+  template:
+    metadata:
+      labels:
+        app: python-hello
+    spec:
+      containers:
+        - name: python-hello
+          image: ujwal30/hello-flask:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
