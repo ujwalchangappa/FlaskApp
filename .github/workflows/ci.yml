@@ -1,4 +1,4 @@
-name: CI
+name: CI workflow
 
 on:
   pull_request:
@@ -8,6 +8,7 @@ on:
     branches:
       - main
       - feature/ujwal_Flask_App
+  workflow_dispatch:
 
 jobs:
   test-and-build:
