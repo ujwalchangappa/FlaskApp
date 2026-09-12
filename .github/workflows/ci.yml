@@ -33,21 +33,24 @@ jobs:
           pytest --cov=app --cov-report=xml --cov-report=term
 
       - name: Run SonarQube Analysis
-        uses: SonarSource/sonar-scanner-github-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        with:
-          args: >
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+        run: |
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2879-linux.zip
+          unzip sonar-scanner-cli-4.8.0.2879-linux.zip
+          ./sonar-scanner-4.8.0.2879-linux/bin/sonar-scanner \
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+            -Dsonar.sources=app \
+            -Dsonar.tests=tests \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.python.coverage.reportPaths=coverage.xml
 
       - name: Check SonarQube Quality Gate
-        uses: SonarSource/sonar-quality-gate-action@master
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          ./sonar-scanner-4.8.0.2879-linux/bin/sonar-scanner \
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.qualitygate.wait=true
 
       - name: Build Docker image
         run: |
