@@ -32,23 +32,17 @@ jobs:
           pip install pytest-cov
           pytest --cov=app --cov-report=xml --cov-report=term
 
-      - name: Set up Java for SonarQube
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Run SonarQube Analysis
-        uses: SonarSource/sonar-scanner-github-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        with:
-          args: >
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.sources=app
-            -Dsonar.tests=tests
-            -Dsonar.python.coverage.reportPaths=coverage.xml
+      - name: Run SonarQube Analysis with Docker
+        run: |
+          docker run --rm \
+            -e SONAR_HOST_URL=${{ secrets.SONAR_HOST_URL }} \
+            -e SONAR_LOGIN=${{ secrets.SONAR_TOKEN }} \
+            -v $(pwd):/usr/src \
+            sonarsource/sonar-scanner-cli:latest \
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+            -Dsonar.sources=/usr/src/app \
+            -Dsonar.tests=/usr/src/tests \
+            -Dsonar.python.coverage.reportPaths=/usr/src/coverage.xml \
             -Dsonar.qualitygate.wait=true
 
       - name: Build Docker image
