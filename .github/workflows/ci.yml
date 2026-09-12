@@ -32,24 +32,20 @@ jobs:
           pip install pytest-cov
           pytest --cov=app --cov-report=xml --cov-report=term
 
+      - name: Install SonarQube Scanner
+        run: |
+          apt-get update
+          apt-get install -y sonar-scanner
+
       - name: Run SonarQube Analysis
         run: |
-          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2879-linux.zip
-          unzip sonar-scanner-cli-4.8.0.2879-linux.zip
-          ./sonar-scanner-4.8.0.2879-linux/bin/sonar-scanner \
+          sonar-scanner \
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
             -Dsonar.sources=app \
             -Dsonar.tests=tests \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.python.coverage.reportPaths=coverage.xml
-
-      - name: Check SonarQube Quality Gate
-        run: |
-          ./sonar-scanner-4.8.0.2879-linux/bin/sonar-scanner \
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.python.coverage.reportPaths=coverage.xml \
             -Dsonar.qualitygate.wait=true
 
       - name: Build Docker image
