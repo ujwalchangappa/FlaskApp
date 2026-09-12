@@ -27,8 +27,27 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run pytest
-        run: pytest -q
+      - name: Run pytest with coverage
+        run: |
+          pip install pytest-cov
+          pytest --cov=app --cov-report=xml --cov-report=term
+
+      - name: Run SonarQube Analysis
+        uses: SonarSource/sonar-scanner-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.python.coverage.reportPaths=coverage.xml
+
+      - name: Check SonarQube Quality Gate
+        uses: SonarSource/sonar-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
       - name: Build Docker image
         run: |
