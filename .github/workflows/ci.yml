@@ -32,9 +32,13 @@ jobs:
           pip install pytest-cov
           pytest --cov=app --cov-report=xml --cov-report=term
 
-      - name: Install SonarQube Scanner
+      - name: Download and Install SonarQube Scanner
         run: |
-          npm install -g sonarqube-scanner
+          mkdir -p $HOME/.sonar
+          cd $HOME/.sonar
+          curl -L https://github.com/SonarSource/sonar-scanner-cli/releases/download/4.8.0.2879/sonar-scanner-cli-4.8.0.2879-linux.zip -o sonar-scanner.zip
+          unzip -q sonar-scanner.zip
+          echo "$HOME/.sonar/sonar-scanner-4.8.0.2879-linux/bin" >> $GITHUB_PATH
 
       - name: Run SonarQube Analysis
         run: |
